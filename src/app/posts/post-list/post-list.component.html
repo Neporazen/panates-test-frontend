@@ -1,0 +1,142 @@
+<div class="row" style="width: 100%;">
+  <div class="col-4">
+    <mat-accordion style="align-items: center;">
+      <mat-expansion-panel style="width: 90%; margin-left: 15px;">
+        <mat-expansion-panel-header>
+          <p style="margin-top: 8px;">Choose Start & End Dates</p>
+          <mat-icon style="margin-top: 6px; margin-left: 2px;">search</mat-icon>
+
+        </mat-expansion-panel-header>
+        <div class="row" style="margin-left: 5px; width: 100%;">
+          <ngb-datepicker #dp (dateSelect)="onDateSelection($event)" [displayMonths]="2" [dayTemplate]="t"
+            outsideDays="hidden">
+          </ngb-datepicker>
+
+          <ng-template #t let-date let-focused="focused">
+            <span class="custom-day" [class.focused]="focused" [class.range]="isRange(date)"
+              [class.faded]="isHovered(date) || isInside(date)" (mouseenter)="hoveredDate = date"
+              (mouseleave)="hoveredDate = null">
+              {{ date.day }}
+            </span>
+          </ng-template>
+
+        </div>
+        <br>
+
+        <button
+          style="margin-left: 5px;"
+          mat-stroked-button color="primary"
+          (click)="searchResults()"
+        >
+          Search Results
+        </button>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <div class="container" style="width: 90%;">
+      <h2 style="margin-left: 10px;">Available Rentals</h2>
+      <cdk-virtual-scroll-viewport itemSize="20" class="example-viewport">
+        <div *ngFor="let result of results" class="list" (click)="clickRent(result._id)">
+          <h3>{{result.name}}</h3>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </div>
+  </div>
+  <div class="col-8">
+    <div class="row" *ngFor="let record of records">
+      <div class="col-6">
+        <img src={{record.images.picture_url}} alt="Rent Image" width="100%" height="300px;">
+        <div style="margin-top: 5px; margin-bottom: 10px; height: 50px; border: 1px #a3b8a9 solid;">
+          <p style="margin-top: 15px; margin-left: 10px;">Review Score: {{ record.review_score?.review_score_rating }}</p>
+        </div>
+        <div class="container" style="width: 100%; margin-left: 0px; padding-right: 0px; padding-left: 0px;">
+          <h2 style="margin-left: 0px;">Reviews: </h2>
+          <cdk-virtual-scroll-viewport itemSize="20" class="example-viewport" style="height: 800px;">
+            <div *ngFor="let review of record.reviews" class="list" style="height: 100%; margin-left: 0px;">
+              <div class="row" style="margin-left: 10px; padding-right: 10px;">
+                <p>{{review?.reviewer_name}}</p>
+                <p style="margin-left: 10px;">{{review.date.substring(0,10)}}</p>
+              </div>
+              <div class="row" style="margin: 10px;">
+                <h3 style="margin-bottom: 5px; margin-left: 2px;">{{review?.comments}}</h3>
+              </div>
+
+            </div>
+          </cdk-virtual-scroll-viewport>
+        </div>
+
+      </div>
+      <div class="col-6">
+        <div class="row">
+          <div class="col-9">
+            <h2>{{record?.name}}</h2>
+            <h4>{{record.host?.host_location}}</h4>
+          </div>
+          <div class="col-3">
+            <img src={{record.host?.host_picture_url}} alt="Host Image" width="100%">
+            <h5>{{record.host?.host_name}}</h5>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-6">
+            <h3><b>Accommodates:</b> {{record?.accommodates}}</h3>
+          </div>
+          <div class="col-6">
+            <h3><b>Bedrooms:</b> {{record?.bedrooms}}</h3>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <h3><b>Bathrooms:</b> {{record.bathrooms.$numberDecimal}}</h3>
+          </div>
+          <div class="col-6">
+            <h3><b>Beds:</b> {{record?.beds}}</h3>
+          </div>
+        </div>
+        <div class="row" style="margin: 3px;">
+          <h3> <b>Summary:</b> </h3> <br>
+          <h3>{{record?.summary}}</h3>
+        </div>
+        <div class="row" style="margin: 3px;">
+          <h3><b>Space:</b></h3> <br>
+          <h3>{{record?.space}}</h3>
+        </div>
+        <div class="row" style="margin: 3px;">
+          <div class="container" style="width: 100%; margin-left: 0px; padding-right: 0px; padding-left: 0px;">
+            <h2 style="margin-left: 0px;">Amenities: </h2>
+            <cdk-virtual-scroll-viewport itemSize="20" class="example-viewport" style="height: 300px;">
+              <div *ngFor="let amenitie of record.amenities" class="list" style="height: 100%; margin-left: 0px;">
+                <div class="row" style="margin: 10px;">
+                  <h3 style="margin-bottom: 5px; margin-left: 2px;">{{amenitie}}</h3>
+                </div>
+              </div>
+            </cdk-virtual-scroll-viewport>
+          </div>
+          <div class="row" style="margin: 3px;">
+            <div class="col-4">
+              <h3><b>Daily Price:</b></h3>
+              <h3>{{record.price?.$numberDecimal}}</h3>
+            </div>
+            <div class="col-4">
+              <h3><b>Weekly Price:</b></h3>
+              <h3>{{record.weekly_price?.$numberDecimal}}</h3>
+            </div>
+            <div class="col-4">
+              <h3><b>Monthly Price:</b></h3>
+              <h3>{{record.monthly_price?.$numberDecimal}}</h3>
+            </div>
+          </div>
+        </div>
+
+          <h3><b>Address:</b></h3> <hr>
+          <h3><b>Street: </b> {{record?.address.street}}</h3> <hr>
+          <h3><b>Suburb: </b>{{record?.address.suburb}}</h3> <hr>
+          <h3><b>Country: </b>{{record?.address.country}}</h3> <hr>
+          <h3><b>Market: </b>{{record?.address.market}}</h3> <hr>
+
+      </div>
+
+    </div>
+  </div>
+</div>
